@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="ResumeBoost — tailored resumes and cover letters from a job description and your background.">
+<title>ResumeBoost — Tailored Resume & Cover Letter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f1e6;
+    --paper: #fffdf8;
+    --ink: #211d17;
+    --ink-soft: #756c5a;
+    --line: #ddd0b8;
+    --pine: #2f4a3c;
+    --pine-deep: #1f3227;
+    --pine-tint: #e6ebe4;
+    --rust: #9c4530;
+    --rust-tint: #f3e6e0;
+    --shadow: 0 1px 2px rgba(33,29,23,0.06), 0 12px 28px rgba(33,29,23,0.06);
+    --serif: "Fraunces", Georgia, serif;
+    --sans: "Work Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #171a17; --paper: #1f231e; --ink: #f1ede2; --ink-soft: #a79f8c;
+      --line: #3a3d34; --pine: #7fb89b; --pine-deep: #a3d3b8; --pine-tint: #26332a;
+      --rust: #e0876a; --rust-tint: #332420;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px rgba(0,0,0,0.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171a17; --paper: #1f231e; --ink: #f1ede2; --ink-soft: #a79f8c;
+    --line: #3a3d34; --pine: #7fb89b; --pine-deep: #a3d3b8; --pine-tint: #26332a;
+    --rust: #e0876a; --rust-tint: #332420;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px rgba(0,0,0,0.25);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); line-height: 1.55; padding: 28px 18px 70px; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  header { margin-bottom: 22px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+  header h1 { font-family: var(--serif); font-weight: 600; font-size: 1.9rem; margin: 0 0 6px; letter-spacing: -0.01em; }
+  header p { color: var(--ink-soft); margin: 0; font-size: 0.95rem; max-width: 50ch; }
+  .trust-row { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .trust-pill { background: var(--pine-tint); color: var(--pine); border-radius: 999px; padding: 4px 9px; font-size: 0.72rem; font-weight: 600; }
+  h2.section-title { font-family: var(--serif); font-weight: 600; font-size: 1.15rem; margin: 0 0 14px; }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 22px; margin-bottom: 18px; }
+  .card.primary { box-shadow: var(--shadow); border-top: 3px solid var(--pine); }
+  label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; }
+  .hint { color: var(--ink-soft); font-size: 0.8rem; margin: -3px 0 10px; }
+  textarea, input[type=text] { width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 11px 12px; font-size: 0.95rem; font-family: var(--sans); resize: vertical; margin-bottom: 16px; }
+  textarea { min-height: 120px; }
+  textarea:focus, input:focus, button:focus-visible, .seg button:focus-visible { outline: 2px solid var(--pine); outline-offset: 1px; }
+  .field-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+  .field-row > div { flex: 1 1 180px; }
+  .field-row label { margin-bottom: 8px; }
+  .seg { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { flex: 1; background: var(--bg); color: var(--ink-soft); border: none; padding: 9px 6px; font-family: var(--sans); font-size: 0.82rem; font-weight: 500; cursor: pointer; border-right: 1px solid var(--line); }
+  .seg button:last-child { border-right: none; }
+  .seg button.active { background: var(--pine); color: #fff; font-weight: 600; }
+  button.btn { font-family: var(--sans); font-size: 0.95rem; font-weight: 600; border-radius: 6px; padding: 13px 18px; cursor: pointer; transition: background 0.15s ease, opacity 0.15s ease; }
+  .btn-primary { background: var(--pine); color: #fff; border: none; width: 100%; }
+  .btn-primary:hover { background: var(--pine-deep); }
+  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-secondary { background: transparent; color: var(--pine); border: 1px solid var(--pine); width: 100%; margin-top: 10px; }
+  .btn-secondary:hover { background: var(--pine-tint); }
+  .btn-text { background: none; border: none; color: var(--pine); font-weight: 600; font-size: 0.8rem; padding: 2px 0; cursor: pointer; text-decoration: underline; }
+  .status { text-align: left; color: var(--ink-soft); font-size: 0.88rem; margin-top: 10px; min-height: 1.2em; }
+  .status.error { color: var(--rust); }
+  .status.success { color: var(--pine); }
+  .result-section { display: none; }
+  .result-section.show { display: block; }
+  .doc-block { margin-bottom: 22px; }
+  .doc-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .doc-head h2 { margin: 0; }
+  .doc-body { font-size: 0.94rem; position: relative; overflow: hidden; }
+  .doc-body.cover { font-family: var(--serif); font-size: 1rem; line-height: 1.7; }
+  .doc-body h3 { font-family: var(--sans); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.03em; color: var(--pine); margin: 16px 0 6px; }
+  .doc-body h3:first-child { margin-top: 0; }
+  .doc-body p { margin: 0 0 10px; }
+  .locked .doc-body { max-height: 150px; overflow: hidden; mask-image: linear-gradient(to bottom, black 32%, transparent 94%); -webkit-mask-image: linear-gradient(to bottom, black 32%, transparent 94%); }
+  .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+  .badge.preview { background: var(--rust-tint); color: var(--rust); }
+  .badge.unlocked { background: var(--pine-tint); color: var(--pine); }
+  .paywall { border: 1px solid var(--line); border-top: 3px solid var(--rust); border-radius: 8px; padding: 18px 18px 16px; background: var(--rust-tint); }
+  .paywall p.lede { margin: 0 0 10px; font-size: 0.92rem; }
+  .paywall .price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px; }
+  .paywall .price { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--ink); }
+  .paywall .price-note { font-size: 0.8rem; color: var(--ink-soft); }
+  a.pay-link { display: inline-block; background: var(--ink); color: var(--paper) !important; text-decoration: none; padding: 11px 20px; border-radius: 6px; font-weight: 600; font-size: 0.92rem; }
+  a.pay-link:hover { opacity: 0.88; }
+  .license-row { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line); }
+  .license-row label { font-size: 0.8rem; }
+  .license-row .hint { margin-bottom: 8px; }
+  .license-form { display: flex; gap: 8px; flex-wrap: wrap; }
+  .license-form input { flex: 1 1 200px; margin-bottom: 0; font-size: 0.88rem; }
+  .license-form button { flex: 0 0 auto; }
+  .license-note { font-size: 0.76rem; color: var(--ink-soft); margin-top: 8px; }
+  .copy-row { display: flex; gap: 12px; margin-top: 8px; }
+  .download-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .download-row .btn-secondary { width: auto; flex: 1 1 220px; margin-top: 0; }
+  footer { color: var(--ink-soft); font-size: 0.78rem; margin-top: 26px; border-top: 1px solid var(--line); padding-top: 14px; }
+  @media (max-width: 520px) { body { padding: 20px 12px 50px; } .card { padding: 18px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>ResumeBoost</h1>
+    <p>Paste your background and the job you want. Get a resume and cover letter tailored to that posting, written for ATS keyword matching and human readers.</p>
+    <div class="trust-row">
+      <span class="trust-pill">No API key required</span>
+      <span class="trust-pill">One-time $5 unlock</span>
+      <span class="trust-pill">Review before sending</span>
+    </div>
+  </header>
+
+  <div class="card primary">
+    <h2 class="section-title">Your details</h2>
+    <label for="background">Your background</label>
+    <div class="hint">Work history, skills, education — rough notes are fine.</div>
+    <textarea id="background" maxlength="8000" placeholder="e.g. 8+ years driving and logistics work, road infrastructure experience with Sinohydro Kenya, manual heavy vehicles, safety procedures, customer-facing work..."></textarea>
+
+    <label for="job">Target job</label>
+    <div class="hint">Paste the full listing if you have it — more detail means better keyword matching.</div>
+    <textarea id="job" maxlength="10000" placeholder="Paste the full job description here..."></textarea>
+
+    <div class="field-row">
+      <div>
+        <label>Tone</label>
+        <div class="seg" id="toneSeg">
+          <button type="button" data-value="professional" class="active">Professional</button>
+          <button type="button" data-value="warm">Warm</button>
+          <button type="button" data-value="executive">Executive</button>
+        </div>
+      </div>
+      <div>
+        <label>Length</label>
+        <div class="seg" id="lengthSeg">
+          <button type="button" data-value="concise" class="active">Concise</button>
+          <button type="button" data-value="detailed">Detailed</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="generateBtn">Generate free preview</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="result-section" id="resultSection">
+    <div class="card">
+      <div class="doc-block">
+        <div class="doc-head">
+          <h2 class="section-title">Tailored resume</h2>
+          <span id="resumeBadge"></span>
+        </div>
+        <div id="resumeWrap"><div class="doc-body" id="resumeText"></div></div>
+        <div class="copy-row" id="resumeCopyRow" style="display:none;"><button class="btn-text" data-copy="resume">Copy resume text</button></div>
+      </div>
+
+      <div class="doc-block">
+        <div class="doc-head">
+          <h2 class="section-title">Cover letter</h2>
+          <span id="coverBadge"></span>
+        </div>
+        <div id="coverWrap"><div class="doc-body cover" id="coverText"></div></div>
+        <div class="copy-row" id="coverCopyRow" style="display:none;"><button class="btn-text" data-copy="cover">Copy cover letter text</button></div>
+      </div>
+
+      <div class="paywall" id="paywall">
+        <p class="lede"><strong>Your preview is ready.</strong> Unlock the complete resume and cover letter to copy or download them.</p>
+        <div class="price-row"><span class="price">$5</span><span class="price-note">one-time purchase</span></div>
+        <a class="pay-link" id="payLink" href="https://thecareertoolkit.gumroad.com/l/ojclf" target="_blank" rel="noopener">Buy & unlock</a>
+        <div class="license-row">
+          <label for="licenseInput">Already paid?</label>
+          <div class="hint">Paste the license key from your Gumroad receipt email.</div>
+          <div class="license-form">
+            <input type="text" id="licenseInput" autocomplete="off" placeholder="XXXXXXXX-XXXXXXXX-XXXXXXXX-XXXXXXXX">
+            <button class="btn btn-secondary" id="unlockBtn" style="width:auto;margin-top:0;">Unlock</button>
+          </div>
+          <div class="license-note" id="licenseNote">Your license is checked against Gumroad before the full document is returned.</div>
+        </div>
+      </div>
+
+      <div class="download-row" id="downloadRow" style="display:none;">
+        <button class="btn btn-secondary" id="downloadBtn">Download as text file</button>
+        <button class="btn btn-secondary" id="printBtn">Print / Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>ResumeBoost generates a starting point. Check names, dates, qualifications, contact details and claims before sending an application.</footer>
+</div>
+
+<script>
+let lastResume = "";
+let lastCover = "";
+let tone = "professional";
+let length = "concise";
+let currentInputs = null;
+let unlocked = false;
+
+const PAYMENT_LINK = "https://thecareertoolkit.gumroad.com/l/ojclf";
+
+document.getElementById('payLink').href = PAYMENT_LINK;
+
+function setupSeg(id, onChange) {
+  document.getElementById(id).querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.getElementById(id).querySelectorAll('button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      onChange(btn.dataset.value);
+    });
+  });
+}
+setupSeg('toneSeg', v => tone = v);
+setupSeg('lengthSeg', v => length = v);
+
+function setStatus(msg, type = '') {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status' + (type ? ' ' + type : '');
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = String(s ?? '');
+  return d.innerHTML;
+}
+
+function renderDoc(container, text) {
+  const lines = String(text || '').split('\n');
+  let html = '';
+  let inParagraph = false;
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (/^#{1,3}\s+/.test(line)) {
+      if (inParagraph) { html += '</p>'; inParagraph = false; }
+      html += `<h3>${escapeHtml(line.replace(/^#{1,3}\s+/, ''))}</h3>`;
+    } else if (line === '') {
+      if (inParagraph) { html += '</p>'; inParagraph = false; }
+    } else {
+      if (!inParagraph) { html += '<p>'; inParagraph = true; }
+      else { html += '<br>'; }
+      html += escapeHtml(line);
+    }
+  }
+  if (inParagraph) html += '</p>';
+  container.innerHTML = html || '<p>No content returned.</p>';
+}
+
+function lockResults() {
+  const rw = document.getElementById('resumeWrap');
+  const cw = document.getElementById('coverWrap');
+  const paywall = document.getElementById('paywall');
+  const downloadRow = document.getElementById('downloadRow');
+  const resumeCopy = document.getElementById('resumeCopyRow');
+  const coverCopy = document.getElementById('coverCopyRow');
+  const rb = document.getElementById('resumeBadge');
+  const cb = document.getElementById('coverBadge');
+
+  rw.classList.toggle('locked', !unlocked);
+  cw.classList.toggle('locked', !unlocked);
+  paywall.style.display = unlocked ? 'none' : 'block';
+  downloadRow.style.display = unlocked ? 'flex' : 'none';
+  resumeCopy.style.display = unlocked ? 'flex' : 'none';
+  coverCopy.style.display = unlocked ? 'flex' : 'none';
+  rb.innerHTML = unlocked ? '<span class="badge unlocked">Unlocked</span>' : '<span class="badge preview">Preview</span>';
+  cb.innerHTML = unlocked ? '<span class="badge unlocked">Unlocked</span>' : '<span class="badge preview">Preview</span>';
+}
+
+async function requestDocuments(licensed, licenseKey = '') {
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...currentInputs, licensed, licenseKey })
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+  return data;
+}
+
+async function generatePreview() {
+  const background = document.getElementById('background').value.trim();
+  const job = document.getElementById('job').value.trim();
+  if (!background || !job) {
+    setStatus('Please fill in both fields.', 'error');
+    return;
+  }
+
+  currentInputs = { background, job, tone, length };
+  unlocked = false;
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating preview...';
+  setStatus('Creating your tailored preview...');
+
+  try {
+    const data = await requestDocuments(false);
+    lastResume = data.resume || '';
+    lastCover = data.cover || '';
+    renderDoc(document.getElementById('resumeText'), lastResume);
+    renderDoc(document.getElementById('coverText'), lastCover);
+    document.getElementById('resultSection').classList.add('show');
+    lockResults();
+    setStatus('Preview ready. Purchase and enter your license key to reveal the full documents.', 'success');
+    window.scrollTo({ top: document.getElementById('resultSection').offsetTop - 15, behavior: 'smooth' });
+  } catch (err) {
+    console.error(err);
+    setStatus(err.message || 'Something went wrong. Please try again.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate free preview';
+  }
+}
+
+document.getElementById('generateBtn').addEventListener('click', generatePreview);
+
+document.getElementById('unlockBtn').addEventListener('click', async () => {
+  const key = document.getElementById('licenseInput').value.trim();
+  const note = document.getElementById('licenseNote');
+  if (!key) {
+    note.textContent = 'Enter the license key from your Gumroad receipt.';
+    note.style.color = 'var(--rust)';
+    return;
+  }
+  if (!currentInputs) {
+    note.textContent = 'Generate a preview first.';
+    note.style.color = 'var(--rust)';
+    return;
+  }
+
+  const btn = document.getElementById('unlockBtn');
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  note.textContent = 'Verifying your purchase with Gumroad...';
+  note.style.color = 'var(--ink-soft)';
+
+  try {
+    const data = await requestDocuments(true, key);
+    lastResume = data.resume || '';
+    lastCover = data.cover || '';
+    unlocked = true;
+    renderDoc(document.getElementById('resumeText'), lastResume);
+    renderDoc(document.getElementById('coverText'), lastCover);
+    lockResults();
+    note.textContent = 'License verified. Your documents are unlocked.';
+    note.style.color = 'var(--pine)';
+    setStatus('Unlocked — you can now copy or download the complete documents.', 'success');
+  } catch (err) {
+    console.error(err);
+    note.textContent = err.message || 'License verification failed.';
+    note.style.color = 'var(--rust)';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Unlock';
+  }
+});
+
+document.querySelectorAll('[data-copy]').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const content = btn.dataset.copy === 'resume' ? lastResume : lastCover;
+    try {
+      await navigator.clipboard.writeText(content);
+      const original = btn.textContent;
+      btn.textContent = 'Copied';
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    } catch {
+      setStatus('Could not copy automatically. Select the text and copy it manually.', 'error');
+    }
+  });
+});
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  const content = `RESUME\n\n${lastResume}\n\n\nCOVER LETTER\n\n${lastCover}`;
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'resume-and-cover-letter.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+</script>
+</body>
+</html>
