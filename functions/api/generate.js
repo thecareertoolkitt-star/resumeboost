@@ -148,10 +148,10 @@ Respond ONLY in this exact format, with no extra commentary:
   });
 
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    console.error("Anthropic error", response.status, data);
-    return jsonWithCors({ error: "The AI service could not generate the documents. Please try again." }, 502, request);
-  }
+if (!response.ok) {
+  console.error("Anthropic error", response.status, data);
+  return jsonWithCors({ error: data?.error?.message || JSON.stringify(data) }, 502, request);
+}
 
   const text = (data.content || []).map(b => b.text || "").join("\n");
   const docs = extractSections(text);
